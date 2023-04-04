@@ -1,0 +1,55 @@
+import requests
+from bs4 import BeautifulSoup
+
+project_name = input("Enter the name of the project: ")
+
+# make a GET request to google search
+res = requests.get('https://www.google.com/search?q=' + project_name)
+
+# parse the html content with beautiful soup
+soup = BeautifulSoup(res.text, 'html.parser')
+
+# find the website link if available
+website_link = ""
+website_elem = soup.select_one('.yuRUbf a')
+if website_elem:
+    website_link = website_elem['href']
+    print("Website:", website_link)
+else:
+    print("Website: Not Found")
+
+# find the twitter link if available
+twitter_link = ""
+twitter_elem = soup.select_one('a[href^="https://twitter.com/"]')
+if twitter_elem:
+    twitter_link = twitter_elem['href']
+    print("Twitter:", twitter_link)
+else:
+    print("Twitter: Not Found")
+
+# find the github link if available
+github_link = ""
+github_elem = soup.select_one('a[href^="https://github.com/"]')
+if github_elem:
+    github_link = github_elem['href']
+    print("GitHub:", github_link)
+else:
+    print("GitHub: Not Found")
+
+# find the discord link if available
+discord_link = ""
+discord_elem = soup.select_one('a[href^="https://discord.com/"]')
+if discord_elem:
+    discord_link = discord_elem['href']
+    print("Discord:", discord_link)
+else:
+    print("Discord: Not Found")
+
+# find the telegram link if available
+telegram_link = ""
+telegram_elem = soup.select_one('a[href^="https://t.me/"]')
+if telegram_elem:
+    telegram_link = telegram_elem['href']
+    print("Telegram:", telegram_link)
+else:
+    print("Telegram: Not Found")
