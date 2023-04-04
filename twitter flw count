@@ -1,0 +1,15 @@
+import snscrape.modules.twitter as sntwitter
+import pandas as pd
+
+# set the twitter handle
+twitter_handle = 'moverxyz'
+
+# create a list to store the follower counts
+follower_counts = []
+
+# loop through the twitter handle's tweets and retrieve the follower count from the user object
+for tweet in sntwitter.TwitterSearchScraper(f'from:{twitter_handle}').get_items():
+    follower_counts.append(tweet.user.followersCount)
+
+# print the follower counts
+print(f"Follower count of {twitter_handle}: {max(follower_counts)}")
