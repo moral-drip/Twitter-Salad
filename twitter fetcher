@@ -17,3 +17,35 @@ tweets_df = pd.DataFrame(tweets_list, columns=['Datetime', 'Tweet Id', 'Text', '
 desktop = os.path.join(os.path.expanduser("~"), "Desktop")
 with open(f"{desktop}/tweets.json", "w") as f:
     json.dump(tweets_df.to_dict(), f, ensure_ascii=False, indent=4)
+
+
+This version sets the until_date to "1 Apr 2023" and modifies the query variable accordingly. Additionally, it uses the strftime method to format the date attribute of each tweet in the desired format. Lastly, it sets the default argument to str when calling json.dump to handle the serialization of datetime objects.
+
+
+
+import os
+import json
+from datetime import datetime
+import snscrape.modules.twitter as sntwitter
+
+# Output file path
+desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+output_file = os.path.join(desktop, "tweets.json")
+
+# Query parameters
+username = "PlayElarium"
+since_date = "2023-01-01"
+until_date = "2023-04-01"
+query = f"from:{username} since:{since_date} until:{until_date}"
+
+# Scrape tweets
+tweets_list = []
+for i, tweet in enumerate(sntwitter.TwitterSearchScraper(query).get_items()):
+    tweets_list.append([tweet.date.strftime('%Y-%m-%d %H:%M:%S'), tweet.id, tweet.rawContent, tweet.likeCount, tweet.retweetCount])
+    print(f"Scraped tweet {i + 1}")
+
+# Save tweets to file
+with open(output_file, "w") as f:
+    json.dump(tweets_list, f, default=str, ensure_ascii=False, indent=4)
+
+print(f"Scraped {len(tweets_list)} tweets and saved to {output_file}")
