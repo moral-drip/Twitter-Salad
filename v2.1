@@ -1,0 +1,16 @@
+import snscrape.modules.twitter as sntwitter
+
+# Define the Twitter username
+username = 'PlayElarium'
+
+# Build the query string
+query = f'from:{username}'
+
+# Retrieve the tweets using the query
+tweets = sntwitter.TwitterSearchScraper(query).get_items()
+
+# Retrieve the first tweet and print the follower count
+for tweet in tweets:
+    print(f"Follower count of {username}: {tweet.user.followersCount}")
+    break
+ 
