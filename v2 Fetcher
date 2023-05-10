@@ -1,0 +1,53 @@
+import snscrape.modules.twitter as sntwitter
+import csv
+import datetime
+import os
+
+# Set the search query and the number of tweets to retrieve
+search_query = input("Enter the search query: ")
+num_tweets = 100
+
+# Calculate the date 3 months ago from today
+today = datetime.date.today()
+three_months_ago = today - datetime.timedelta(days=3*30)
+
+# Create a query string to pass to snscrape
+query = f"{search_query} since:{three_months_ago} until:{today} lang:en"
+
+# Retrieve the tweets
+tweets = []
+for i, tweet in enumerate(sntwitter.TwitterSearchScraper(query).get_items()):
+    if i >= num_tweets:
+        break
+    tweets.append([tweet.user.username, tweet.likeCount, tweet.retweetCount, tweet.rawContent])
+
+# Count the number of unique users in the dataset
+unique_users = len(set([tweet[0] for tweet in tweets]))
+
+# Calculate the percentage of unique users in the dataset
+unique_users_percent = (unique_users / num_tweets) * 100
+
+# Calculate the total number of likes and retweets in the dataset
+total_likes = sum([tweet[1] for tweet in tweets])
+total_retweets = sum([tweet[2] for tweet in tweets])
+
+# Create a directory on Desktop if it doesn't exist
+desktop = os.path.expanduser("~/Desktop")
+dir_path = os.path.join(desktop, "Twitter Data")
+if not os.path.exists(dir_path):
+    os.makedirs(dir_path)
+
+# Save the tweets data to a CSV file
+file_path = os.path.join(dir_path, f"{search_query}.csv")
+with open(file_path, 'w', newline='', encoding='utf-8') as f:
+    writer = csv.writer(f)
+    writer.writerow(['Username', 'Likes Count', 'Retweets Count', 'Tweet'])
+    for tweet in tweets:
+        writer.writerow(tweet)
+
+# Save the statistics data to a separate sheet in the same CSV file
+with open(file_path, 'a', newline='', encoding='utf-8') as f:
+    writer = csv.writer(f)
+    writer.writerow([])
+    writer.writerow(['Percentage of Unique Users', 'Total Likes', 'Total Retweets'])
+    writer.writerow([f"{unique_users_percent:.2f}%", total_likes, total_retweets])
