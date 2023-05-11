@@ -1,15 +1,24 @@
 import snscrape.modules.twitter as sntwitter
-import pandas as pd
 
-# set the twitter handle
-twitter_handle = 'moverxyz'
+# Get the Twitter handle from the user
+handle = input("Enter a Twitter handle: ")
 
-# create a list to store the follower counts
-follower_counts = []
+# Construct the query to find the user profile
+query = f"from:{handle} since_id:0 max_id:0"
 
-# loop through the twitter handle's tweets and retrieve the follower count from the user object
-for tweet in sntwitter.TwitterSearchScraper(f'from:{twitter_handle}').get_items():
-    follower_counts.append(tweet.user.followersCount)
+# Use snscrape to find the user profile
+user_profile = None
+for tweet in sntwitter.TwitterSearchScraper(query).get_items():
+    if tweet.user.username.lower() == handle.lower():
+        user_profile = tweet.user
+        break
 
-# print the follower counts
-print(f"Follower count of {twitter_handle}: {max(follower_counts)}")
+# Check if the user profile was found
+if user_profile:
+    # Get the number of followers from the user profile
+    follower_count = user_profile.followersCount
+    # Print the result
+    print(f"{handle} has {follower_count} followers.")
+else:
+    # Print an error message if the user profile was not found
+    print(f"Unable to find user profile for {handle}.")
